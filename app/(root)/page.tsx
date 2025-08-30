@@ -16,7 +16,7 @@ const Page = () => {
           </p>
 
           <Button asChild className="btn-primary max-sm:w-full">
-            <Link href="/Interview">Start the Interview</Link>
+            <Link href="/interview">Start the Interview</Link>
           </Button>
         </div>
         <Image
