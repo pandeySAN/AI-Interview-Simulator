@@ -34,23 +34,27 @@ export async function signIn({ idToken }: { idToken: string }) {
 }
 
 // Sign up user
-export async function signUp({
-  name,
-  email,
-  password,
-}: {
-  name: string
-  email: string
-  password: string
-}) {
+export async function signUp({ idToken }: { idToken: string }) {
   try {
-    const user = await auth.createUser({
-      email,
-      password,
-      displayName: name,
+    const decodedToken = await auth.verifyIdToken(idToken)
+    const sessionId = nanoid()
+
+    // Create a JWT session
+    const token = await new SignJWT({ uid: decodedToken.uid })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d")
+      .sign(new TextEncoder().encode(process.env.JWT_SECRET!))
+
+    const cookieStore = await cookies()
+    cookieStore.set("session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     })
 
-    return { success: true, uid: user.uid }
+    return { success: true }
   } catch (error: any) {
     console.error("Sign-up error:", error)
     return { success: false, message: error.message }

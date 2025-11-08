@@ -59,7 +59,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
         const idToken = await userCredential.user.getIdToken()
 
         // Store in your backend
-        const result = await signUp({ name, email, idToken })
+        const result = await signUp({ idToken })
         if (result.success) {
           toast.success("Account created successfully!")
           router.push("/")
